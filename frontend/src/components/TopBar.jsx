@@ -1,50 +1,16 @@
 import React, { useState } from 'react';
-<<<<<<< HEAD
 import { Database, Play, CheckCircle, AlertTriangle, Shield, RefreshCw, Radio, FlaskConical } from 'lucide-react';
 import { generateDemoData, runSupervisoryAnalysis, getUIMode, setUIMode } from '../api';
-=======
-import { Database, Play, CheckCircle, AlertTriangle, Shield, RefreshCw } from 'lucide-react';
-import { generateDemoData, runSupervisoryAnalysis } from '../api';
->>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
 
 export default function TopBar({ activeView, onDataRefresh, onSelectCSE }) {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
-<<<<<<< HEAD
   const [mode, setMode] = useState(getUIMode());
-=======
->>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
-
-  const showToast = (msg, type = 'success') => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 4000);
-  };
-
-<<<<<<< HEAD
-  const handleModeChange = (nextMode) => {
-    if (nextMode === mode) return;
-    setUIMode(nextMode);
-    setMode(nextMode);
-    showToast(
-      nextMode === 'proof'
-        ? 'Switched to Proof Mode — running entirely on a pre-baked, offline dataset.'
-        : 'Switched to Live Mode — reading from the FastAPI backend.',
-      'success'
-    );
-    onDataRefresh();
-  };
-
-=======
->>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
   const handleGenerateData = async () => {
     try {
       setLoading(true);
       const res = await generateDemoData();
-<<<<<<< HEAD
       showToast(`Generated ${res.generator_result.alerts_count.toLocaleString()} alerts across ${res.generator_result.cses_count} CSEs`, 'success');
-=======
-      showToast(`Generated ${res.generator_result.alerts_count.toLocaleString()} alerts across ${res.generator_result.cses_count} CSEs!`, 'success');
->>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
       onDataRefresh();
     } catch (err) {
       showToast(`Generation failed: ${err.message}`, 'error');
@@ -57,11 +23,7 @@ export default function TopBar({ activeView, onDataRefresh, onSelectCSE }) {
     try {
       setLoading(true);
       const res = await runSupervisoryAnalysis();
-<<<<<<< HEAD
       showToast(`Supervisory analysis complete: ${res.total_findings} findings detected`, 'success');
-=======
-      showToast(`Supervisory analysis complete: ${res.total_findings} findings detected!`, 'success');
->>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
       onDataRefresh();
     } catch (err) {
       showToast(`Analysis failed: ${err.message}`, 'error');
@@ -87,7 +49,6 @@ export default function TopBar({ activeView, onDataRefresh, onSelectCSE }) {
 
   return (
     <header className="top-bar">
-<<<<<<< HEAD
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
         <h1 style={{ fontSize: '1.05rem', fontWeight: '600', color: 'var(--paper)', letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {viewTitles[activeView] || 'Supervisory Assessment'}
@@ -95,20 +56,10 @@ export default function TopBar({ activeView, onDataRefresh, onSelectCSE }) {
         {activeView === 'dashboard' && (
           <span className="badge badge-blue" style={{ flexShrink: 0 }}>
             Period 2026-Q3
-=======
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <h2 style={{ fontSize: '1.15rem', fontWeight: '700', color: '#f8fafc', letterSpacing: '-0.01em' }}>
-          {viewTitles[activeView] || 'Supervisory Assessment'}
-        </h2>
-        {activeView === 'dashboard' && (
-          <span className="badge badge-blue" style={{ fontSize: '0.7rem' }}>
-            PERIOD: 2026-Q3
->>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
           </span>
         )}
       </div>
 
-<<<<<<< HEAD
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
         {/* Toast Notification */}
         {toast && (
@@ -163,42 +114,14 @@ export default function TopBar({ activeView, onDataRefresh, onSelectCSE }) {
           </button>
         </div>
 
-=======
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-        {/* Toast Notification */}
-        {toast && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: toast.type === 'error' ? 'rgba(244, 63, 94, 0.2)' : 'rgba(16, 185, 129, 0.2)',
-            border: `1px solid ${toast.type === 'error' ? '#f43f5e' : '#10b981'}`,
-            color: toast.type === 'error' ? '#fda4af' : '#6ee7b7',
-            padding: '6px 14px',
-            borderRadius: '6px',
-            fontSize: '0.82rem',
-            fontWeight: '500'
-          }}>
-            {toast.type === 'error' ? <AlertTriangle size={15} /> : <CheckCircle size={15} />}
-            {toast.msg}
-          </div>
-        )}
-
->>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
         {/* Action 1: Generate Demo Dataset */}
         <button
           onClick={handleGenerateData}
           disabled={loading}
           className="btn btn-secondary"
-<<<<<<< HEAD
           title={mode === 'proof' ? 'Resets the Proof Mode dataset back to its baseline snapshot' : 'Generates 12 CSEs with 16,000+ realistic alerts, cases, assets and ground truth'}
         >
           <Database size={15} />
-=======
-          title="Generates 12 CSEs with 16,000+ realistic alerts, cases, assets and ground truth"
-        >
-          <Database size={15} color="#38bdf8" />
->>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
           <span>Generate Demo Dataset</span>
         </button>
 
@@ -214,19 +137,11 @@ export default function TopBar({ activeView, onDataRefresh, onSelectCSE }) {
         </button>
 
         {/* Role Pill */}
-<<<<<<< HEAD
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: 'var(--ink-850)', border: '1px solid var(--line)', borderRadius: 'var(--radius)' }}>
           <Shield size={15} color="#5b84e8" />
           <div style={{ fontSize: '0.78rem' }}>
             <span style={{ color: 'var(--paper)', fontWeight: '600' }}>Supervisor</span>
             <span style={{ color: 'var(--paper-faint)', marginLeft: '6px' }}>NCIIPC Lead</span>
-=======
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: 'rgba(255, 255, 255, 0.04)', border: '1px solid var(--border-subtle)', borderRadius: '6px' }}>
-          <Shield size={16} color="#06b6d4" />
-          <div style={{ fontSize: '0.78rem' }}>
-            <span style={{ color: '#f8fafc', fontWeight: '600' }}>Supervisor</span>
-            <span style={{ color: '#64748b', marginLeft: '6px' }}>NCIIPC Lead</span>
->>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
           </div>
         </div>
       </div>
