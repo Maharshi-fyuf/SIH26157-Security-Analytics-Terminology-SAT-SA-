@@ -134,6 +134,7 @@ def generate_executive_report_html(db: Session) -> str:
             margin-top: 40px;
         }}
         @media print {{
+<<<<<<< HEAD
             /* The screen design uses a dark navy background with near-white
                text. Printed as-is, that means either a wall of dark ink or
                (with backgrounds suppressed by the print driver) near-white
@@ -165,6 +166,13 @@ def generate_executive_report_html(db: Session) -> str:
             }}
             a {{ color: #0369a1 !important; }}
             @page {{ margin: 1.5cm; }}
+=======
+            body {{ background: #fff; color: #000; padding: 15px; }}
+            .header {{ border-color: #000; }}
+            .kpi-card, table, .disclaimer-box {{ background: #fff; border: 1px solid #ccc; color: #000; }}
+            .kpi-val {{ color: #0284c7; }}
+            th {{ background: #f1f5f9; color: #334155; }}
+>>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
         }}
     </style>
 </head>
@@ -323,6 +331,7 @@ def generate_cse_report_html(db: Session, cse_id: str) -> str:
             font-size: 0.85em;
             margin-top: 35px;
         }}
+<<<<<<< HEAD
         @media print {{
             /* See the equivalent block in generate_executive_report_html for
                why this is necessary: inline style="" colors throughout this
@@ -347,6 +356,8 @@ def generate_cse_report_html(db: Session, cse_id: str) -> str:
             a {{ color: #0369a1 !important; }}
             @page {{ margin: 1.5cm; }}
         }}
+=======
+>>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
     </style>
 </head>
 <body>

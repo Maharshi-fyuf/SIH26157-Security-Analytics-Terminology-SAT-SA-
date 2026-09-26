@@ -160,6 +160,7 @@ Includes a dynamic validation module benchmarking the supervisory engine against
    cd ..
    ```
 
+<<<<<<< HEAD
 4. **Launch both servers together (recommended):**
    ```bash
    npm install
@@ -170,11 +171,18 @@ Includes a dynamic validation module benchmarking the supervisory engine against
    Alternatively, run them in two separate terminals:
 
    **Terminal 1 — Backend:**
+=======
+4. **Launch the FastAPI Backend:**
+>>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
    ```bash
    python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
    ```
 
+<<<<<<< HEAD
    **Terminal 2 — Frontend:**
+=======
+5. **Launch the Vite Frontend:**
+>>>>>>> 584f86a5a08d6aa3db9f3ba3b386a17085f0be83
    ```bash
    cd frontend
    npm run dev
