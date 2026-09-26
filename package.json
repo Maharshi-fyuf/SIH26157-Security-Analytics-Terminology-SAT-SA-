@@ -1,0 +1,14 @@
+{
+  "name": "sat-sa",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n BACKEND,FRONTEND -c blue,green \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload",
+    "build": "cd frontend && npm run build",
+    "lint": "cd frontend && npm run lint"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
