@@ -3,6 +3,11 @@ import { CheckCheck, CheckCircle2, XCircle, AlertCircle, UserCheck } from 'lucid
 import { fetchValidation } from '../api';
 import StateMessage, { LoadingNotice } from '../components/StateMessage';
 
+export default function ValidationView() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     loadValidation();
   }, []);
@@ -11,6 +16,11 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     try {
       setLoading(true);
       setError(null);
+      const res = await fetchValidation();
+      setData(res);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to load validation metrics.');
     } finally {
       setLoading(false);
     }
@@ -148,8 +158,6 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
             </thead>
             <tbody>
               {evaluations.map((ev) => {
-=======
-                const isTP = ev.status.includes('True Positive');
                 const isTN = ev.status.includes('True Negative');
                 const isFP = ev.status.includes('False Positive');
                 const isFN = ev.status.includes('False Negative');

@@ -1,8 +1,14 @@
 import { demo } from './data/demoSnapshot';
 
-const API_BASE = "/api";
+const API_BASE = import.meta.env.VITE_API_BASE || "/api";
 const MODE_KEY = "sat-sa-ui-mode";
 export const MODE_EVENT = "sat-sa-mode-change";
+
+// --- Proof Mode -------------------------------------------------------
+// Proof Mode swaps every read/write call below for a pre-baked, internally
+// consistent dataset (frontend/src/data/demoSnapshot.js) so the app is
+// fully demoable offline, with no dependency on the Python backend, a
+// network connection, or the live demo-data generator working on stage.
 
 export function getUIMode() {
   try {
@@ -23,6 +29,8 @@ export function setUIMode(mode) {
   window.dispatchEvent(new CustomEvent(MODE_EVENT, { detail: next }));
 }
 
+// Small artificial delay so Proof Mode still *feels* like it's doing work,
+// rather than snapping instantly in a way that looks fake.
 function settle(value, ms = 250) {
   return new Promise(resolve => setTimeout(() => resolve(value), ms));
 }
@@ -189,6 +197,7 @@ export async function runSupervisoryAnalysis() {
 
 export async function uploadDataset(file) {
   if (isProofMode()) {
+    // Simulate a plausible, successful ingestion without touching the network.
     const approxRows = Math.max(20, Math.round((file.size || 4000) / 140));
     demo.logAudit('Supervisor (Uploader)', 'Dataset Uploaded', `Uploaded file '${file.name}' with ~${approxRows} records (Proof Mode simulated ingestion).`);
     return settle({

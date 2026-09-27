@@ -8,13 +8,16 @@ import {
   Flame,
   CheckSquare,
   ArrowRight,
-=======
-  TrendingDown,
   ShieldCheck,
   AlertTriangle
 } from 'lucide-react';
 import { fetchDashboard } from '../api';
 import StateMessage, { LoadingNotice } from '../components/StateMessage';
+
+export default function DashboardView({ onNavigate, onSelectCSE }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     loadDashboard();
@@ -24,6 +27,11 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     try {
       setLoading(true);
       setError(null);
+      const res = await fetchDashboard();
+      setData(res);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to load the dashboard.');
     } finally {
       setLoading(false);
     }
