@@ -3,6 +3,12 @@ import { Crosshair, Check, AlertCircle, ChevronDown, ChevronUp, Shield } from 'l
 import { fetchSamples } from '../api';
 import StateMessage, { LoadingNotice } from '../components/StateMessage';
 
+export default function SamplesView({ onSelectFinding }) {
+  const [samples, setSamples] = useState([]);
+  const [expandedId, setExpandedId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     loadSamples();
   }, []);
@@ -11,6 +17,11 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     try {
       setLoading(true);
       setError(null);
+      const res = await fetchSamples();
+      setSamples(res);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to load recommended samples.');
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { HeartHandshake, PlusCircle, CheckCircle, Clock, Filter, AlertTriangle } from 'lucide-react';
 import { fetchRemediations, createRemediation, updateRemediation, fetchCSEs } from '../api';
 import StateMessage, { LoadingNotice } from '../components/StateMessage';
+
+export default function RemediationView() {
+  const [actions, setActions] = useState([]);
+  const [cses, setCses] = useState([]);
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [newAction, setNewAction] = useState({
     cse_id: 'CSE-07',
@@ -21,6 +28,15 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     try {
       setLoading(true);
       setError(null);
+      const [actData, cData] = await Promise.all([
+        fetchRemediations(),
+        fetchCSEs()
+      ]);
+      setActions(actData);
+      setCses(cData);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to load remediation actions.');
     } finally {
       setLoading(false);
     }
@@ -67,6 +83,35 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     return <StateMessage tone="error" title="Couldn't load remediations" description={error} actionLabel="Retry" onAction={loadData} />;
   }
 
+  const filtered = actions.filter(a => statusFilter === 'All' || a.status === statusFilter);
+
+  const statusCounts = {
+    total: actions.length,
+    open: actions.filter(a => a.status === 'Open').length,
+    inProgress: actions.filter(a => a.status === 'In Progress').length,
+    completed: actions.filter(a => a.status === 'Completed').length,
+    verification: actions.filter(a => a.status === 'Verification Pending').length
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* KPI Status Strip */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
+        <div className="card">
+          <div className="kpi-label">Total corrective actions</div>
+          <div className="kpi-value" style={{ color: '#5b84e8' }}>{statusCounts.total}</div>
+        </div>
+        <div className="card">
+          <div className="kpi-label">Open actions</div>
+          <div className="kpi-value" style={{ color: '#d99a52' }}>{statusCounts.open}</div>
+        </div>
+        <div className="card">
+          <div className="kpi-label">In progress</div>
+          <div className="kpi-value" style={{ color: '#d3c15f' }}>{statusCounts.inProgress}</div>
+        </div>
+        <div className="card">
+          <div className="kpi-label">Completed / verified</div>
+          <div className="kpi-value" style={{ color: '#5fac86' }}>{statusCounts.completed + statusCounts.verification}</div>
         </div>
       </div>
 
@@ -114,6 +159,18 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
             description={actions.length === 0 ? 'Create one from a finding\u2019s detail view, or use "Create Remediation Action" above.' : 'No action matches this status filter.'}
           />
         ) : (
+        <div style={{ overflowX: 'auto' }}>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Action ID</th>
+                <th>Entity</th>
+                <th>Priority</th>
+                <th>Corrective action item</th>
+                <th>Designated owner</th>
+                <th>Target due date</th>
+                <th>Quantitative verification metric</th>
+                <th>Progress status</th>
               </tr>
             </thead>
             <tbody>
@@ -173,6 +230,15 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
           </table>
         </div>
         )}
+      </div>
+
+      {/* Create Remediation Modal Form */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+            <div className="modal-header">
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--paper)' }}>
+                Create supervisory corrective action
               </h3>
             </div>
             <form onSubmit={handleCreateSubmit}>

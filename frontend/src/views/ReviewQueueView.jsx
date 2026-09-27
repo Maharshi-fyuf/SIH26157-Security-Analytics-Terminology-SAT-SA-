@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { ListTodo, CheckCircle, Clock, AlertTriangle, HelpCircle, XCircle } from 'lucide-react';
 import { fetchReviewQueue, updateFindingStatus } from '../api';
 import StateMessage, { LoadingNotice } from '../components/StateMessage';
+
+export default function ReviewQueueView({ onSelectFinding }) {
+  const [queue, setQueue] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
 
   useEffect(() => {
@@ -12,6 +17,11 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     try {
       setLoading(true);
       setError(null);
+      const res = await fetchReviewQueue();
+      setQueue(res);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to load the review queue.');
     } finally {
       setLoading(false);
     }

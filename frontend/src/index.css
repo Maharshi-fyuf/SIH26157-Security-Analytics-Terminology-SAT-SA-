@@ -65,6 +65,18 @@ body {
   }
 }
 
+/* Layout */
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 244px;
+  background-color: var(--ink-900);
+  border-right: 1px solid var(--line);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -154,6 +166,14 @@ body {
   padding-bottom: 10px;
   border-bottom: 1px solid var(--line);
   gap: 12px;
+}
+
+/* Metric KPI Card */
+.kpi-card {
+  background: var(--ink-850);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
 }

@@ -16,6 +16,12 @@ import {
 import { fetchCSEProfile, fetchCSEs, getCSEReportUrl } from '../api';
 import StateMessage, { LoadingNotice } from '../components/StateMessage';
 
+export default function CSEProfileView({ cseId = 'CSE-07', onSelectCSE, onSelectFinding, onNavigate }) {
+  const [profile, setProfile] = useState(null);
+  const [allCSEs, setAllCSEs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     loadData(cseId);
   }, [cseId]);
@@ -24,6 +30,15 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     try {
       setLoading(true);
       setError(null);
+      const [profData, csesData] = await Promise.all([
+        fetchCSEProfile(targetId),
+        fetchCSEs()
+      ]);
+      setProfile(profData);
+      setAllCSEs(csesData);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || `Failed to load the profile for ${targetId}.`);
     } finally {
       setLoading(false);
     }

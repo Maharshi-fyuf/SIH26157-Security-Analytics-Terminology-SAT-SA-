@@ -3,6 +3,11 @@ import { BarChart3, TrendingDown, ArrowUpDown } from 'lucide-react';
 import { fetchBenchmarks } from '../api';
 import StateMessage, { LoadingNotice } from '../components/StateMessage';
 
+export default function PeerBenchmarkView({ onSelectCSE, onNavigate }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     loadBenchmarks();
   }, []);
@@ -11,6 +16,11 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     try {
       setLoading(true);
       setError(null);
+      const res = await fetchBenchmarks();
+      setData(res);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to load peer benchmarks.');
     } finally {
       setLoading(false);
     }
@@ -39,6 +49,32 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     );
   }
 
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {/* Peer Summary Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+        <div className="card">
+          <div className="kpi-label">Peer median critical closure</div>
+          <div className="kpi-value" style={{ color: '#5b84e8' }}>{medians.crit_median_dur} min</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--paper-faint)', marginTop: '4px' }}>Established sector baseline</div>
+        </div>
+
+        <div className="card">
+          <div className="kpi-label">Peer median critical escalation</div>
+          <div className="kpi-value" style={{ color: '#5fac86' }}>{medians.crit_esc_rate}%</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--paper-faint)', marginTop: '4px' }}>Tier-2/IR escalation norm</div>
+        </div>
+
+        <div className="card">
+          <div className="kpi-label">Peer median telemetry coverage</div>
+          <div className="kpi-value" style={{ color: '#5b84e8' }}>{medians.telemetry_coverage}%</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--paper-faint)', marginTop: '4px' }}>Continuous ingestion health</div>
+        </div>
+
+        <div className="card">
+          <div className="kpi-label">Peer median evidence count</div>
+          <div className="kpi-value" style={{ color: '#d3c15f' }}>{medians.avg_evidence} items</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--paper-faint)', marginTop: '4px' }}>Per case investigation</div>
         </div>
       </div>
 

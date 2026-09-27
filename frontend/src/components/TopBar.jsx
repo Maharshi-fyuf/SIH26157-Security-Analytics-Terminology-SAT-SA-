@@ -6,6 +6,25 @@ export default function TopBar({ activeView, onDataRefresh, onSelectCSE }) {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
   const [mode, setMode] = useState(getUIMode());
+
+  const showToast = (msg, type = 'success') => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 4000);
+  };
+
+  const handleModeChange = (nextMode) => {
+    if (nextMode === mode) return;
+    setUIMode(nextMode);
+    setMode(nextMode);
+    showToast(
+      nextMode === 'proof'
+        ? 'Switched to Proof Mode — running entirely on a pre-baked, offline dataset.'
+        : 'Switched to Live Mode — reading from the FastAPI backend.',
+      'success'
+    );
+    onDataRefresh();
+  };
+
   const handleGenerateData = async () => {
     try {
       setLoading(true);

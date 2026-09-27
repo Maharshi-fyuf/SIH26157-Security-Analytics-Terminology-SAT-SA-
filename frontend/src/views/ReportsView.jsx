@@ -31,6 +31,11 @@ export default function ReportsView({ initialCSE = 'CSE-07' }) {
     }
   };
 
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Control Bar */}
+      <div className="card" style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: '8px' }}>
             <button
               onClick={() => setSelectedReport('executive')}
@@ -85,6 +90,15 @@ export default function ReportsView({ initialCSE = 'CSE-07' }) {
             <Printer size={15} />
             <span>Print preview</span>
           </button>
+          <a
+            href={reportUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-secondary"
+            style={{ fontSize: '0.82rem' }}
+          >
+            <ExternalLink size={15} />
+            <span>Open in fullscreen / print PDF</span>
           </a>
         </div>
       </div>

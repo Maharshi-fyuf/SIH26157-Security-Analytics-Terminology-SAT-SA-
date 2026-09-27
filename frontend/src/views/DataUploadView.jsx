@@ -3,6 +3,13 @@ import { UploadCloud, CheckCircle, AlertCircle, FileSpreadsheet, ShieldAlert, Hi
 import { uploadDataset, fetchAuditLogs } from '../api';
 import StateMessage from '../components/StateMessage';
 
+export default function DataUploadView() {
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [logsError, setLogsError] = useState(null);
+
   useEffect(() => {
     loadAuditLogs();
   }, []);
@@ -10,6 +17,11 @@ import StateMessage from '../components/StateMessage';
   const loadAuditLogs = async () => {
     try {
       setLogsError(null);
+      const logs = await fetchAuditLogs();
+      setAuditLogs(logs);
+    } catch (err) {
+      console.error(err);
+      setLogsError(err.message || 'Failed to load the audit trail.');
     }
   };
 

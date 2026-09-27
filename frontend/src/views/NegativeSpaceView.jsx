@@ -3,6 +3,11 @@ import { Grid, EyeOff, Check, AlertTriangle, X, HelpCircle } from 'lucide-react'
 import { fetchNegativeSpaceMatrix } from '../api';
 import StateMessage, { LoadingNotice } from '../components/StateMessage';
 
+export default function NegativeSpaceView({ onSelectCSE, onNavigate }) {
+  const [matrix, setMatrix] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     loadMatrix();
   }, []);
@@ -11,6 +16,11 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     try {
       setLoading(true);
       setError(null);
+      const res = await fetchNegativeSpaceMatrix();
+      setMatrix(res);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to load the negative space matrix.');
     } finally {
       setLoading(false);
     }

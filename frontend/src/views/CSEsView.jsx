@@ -3,6 +3,13 @@ import { Building2, Search, Filter, ArrowUpRight } from 'lucide-react';
 import { fetchCSEs } from '../api';
 import StateMessage, { LoadingNotice } from '../components/StateMessage';
 
+export default function CSEsView({ onSelectCSE, onNavigate }) {
+  const [cses, setCses] = useState([]);
+  const [search, setSearch] = useState('');
+  const [sectorFilter, setSectorFilter] = useState('All');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     loadCSEs();
   }, []);
@@ -11,6 +18,11 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     try {
       setLoading(true);
       setError(null);
+      const res = await fetchCSEs();
+      setCses(res);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to load the CSE directory.');
     } finally {
       setLoading(false);
     }
@@ -36,6 +48,24 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     );
   }
 
+  const sectors = ['All', ...new Set(cses.map(c => c.sector))];
+
+  const filtered = cses.filter(c => {
+    const matchSearch = c.cse_id.toLowerCase().includes(search.toLowerCase()) ||
+                        c.cse_name.toLowerCase().includes(search.toLowerCase());
+    const matchSector = sectorFilter === 'All' || c.sector === sectorFilter;
+    return matchSearch && matchSector;
+  });
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Filter Controls Bar */}
+      <div className="card" style={{ padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '260px' }}>
+          <Search size={16} color="var(--paper-faint)" />
+          <input
+            type="text"
+            placeholder="Search CSE ID, name or sector..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{
@@ -75,6 +105,17 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
         {filtered.length === 0 ? (
           <StateMessage tone="empty" title="No matching entities" description="No CSE matches this search and filter combination. Try clearing the search or sector filter." />
         ) : (
+        <div style={{ overflowX: 'auto' }}>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Entity ID</th>
+                <th>Critical sector entity name</th>
+                <th>Sector</th>
+                <th>Tier criticality</th>
+                <th>Attention score</th>
+                <th>Supervisory review status</th>
+                <th>Detected signals</th>
                 <th>Action</th>
               </tr>
             </thead>

@@ -3,6 +3,16 @@ import { Search, Filter, ArrowUpRight, ShieldAlert, CheckCircle, Clock } from 'l
 import { fetchFindings, fetchCSEs } from '../api';
 import StateMessage, { LoadingNotice } from '../components/StateMessage';
 
+export default function FindingsView({ onSelectFinding }) {
+  const [findings, setFindings] = useState([]);
+  const [cses, setCses] = useState([]);
+  const [search, setSearch] = useState('');
+  const [cseFilter, setCseFilter] = useState('All');
+  const [severityFilter, setSeverityFilter] = useState('All');
+  const [typeFilter, setTypeFilter] = useState('All');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -11,6 +21,15 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     try {
       setLoading(true);
       setError(null);
+      const [fData, cData] = await Promise.all([
+        fetchFindings(),
+        fetchCSEs()
+      ]);
+      setFindings(fData);
+      setCses(cData);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to load findings.');
     } finally {
       setLoading(false);
     }
@@ -36,6 +55,22 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     );
   }
 
+  const filtered = findings.filter(f => {
+    const matchSearch = f.title.toLowerCase().includes(search.toLowerCase()) ||
+                        f.description.toLowerCase().includes(search.toLowerCase()) ||
+                        f.finding_id.toLowerCase().includes(search.toLowerCase());
+    const matchCSE = cseFilter === 'All' || f.cse_id === cseFilter;
+    const matchSev = severityFilter === 'All' || f.severity === severityFilter;
+    const matchType = typeFilter === 'All' || f.finding_type === typeFilter;
+    return matchSearch && matchCSE && matchSev && matchType;
+  });
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Filter Controls Bar */}
+      <div className="card" style={{ padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '240px' }}>
+          <Search size={16} color="var(--paper-faint)" />
           <input
             type="text"
             placeholder="Search findings, keywords or ID..."
@@ -101,6 +136,17 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
         {filtered.length === 0 ? (
           <StateMessage tone="empty" title="No matching findings" description="No finding matches this search and filter combination. Try clearing a filter." />
         ) : (
+        <div style={{ overflowX: 'auto' }}>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Finding ID</th>
+                <th>Entity</th>
+                <th>Dimension</th>
+                <th>Severity</th>
+                <th>Supervisory finding title</th>
+                <th>Confidence</th>
+                <th>Review status</th>
                 <th>Action</th>
               </tr>
             </thead>

@@ -13,6 +13,11 @@ import {
 } from 'lucide-react';
 import { fetchFindingDetail, updateFindingStatus, createRemediation } from '../api';
 import StateMessage, { LoadingNotice } from '../components/StateMessage';
+
+export default function FindingDetailModal({ findingId, onClose, onStatusUpdated }) {
+  const [finding, setFinding] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [remediationCreated, setRemediationCreated] = useState(false);
@@ -25,6 +30,12 @@ import StateMessage, { LoadingNotice } from '../components/StateMessage';
     try {
       setLoading(true);
       setError(null);
+      const data = await fetchFindingDetail(id);
+      setFinding(data);
+      setNotes(data.supervisor_notes || '');
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to load this finding.');
     } finally {
       setLoading(false);
     }
