@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { API_ERROR_EVENT, setUIMode } from './api';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import DashboardView from './views/DashboardView';
@@ -20,8 +21,16 @@ export default function App() {
   const [selectedCSE, setSelectedCSE] = useState('CSE-07');
   const [selectedFindingId, setSelectedFindingId] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [apiError, setApiError] = useState(false);
+
+  useEffect(() => {
+    const handleError = () => setApiError(true);
+    window.addEventListener(API_ERROR_EVENT, handleError);
+    return () => window.removeEventListener(API_ERROR_EVENT, handleError);
+  }, []);
 
   const handleDataRefresh = () => {
+    setApiError(false);
     setRefreshKey(prev => prev + 1);
   };
 
@@ -44,6 +53,17 @@ export default function App() {
 
       {/* Main Content Area */}
       <div className="main-content">
+        {apiError && (
+          <div style={{ padding: '12px 20px', background: '#ffebee', color: '#c62828', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #ef9a9a' }}>
+            <span><strong>Connection Error:</strong> Could not reach the live backend API. The backend might be asleep or misconfigured.</span>
+            <button 
+              onClick={() => { setUIMode('proof'); setApiError(false); setRefreshKey(k => k + 1); }}
+              style={{ background: '#d32f2f', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}
+            >
+              Switch to Offline Proof Mode
+            </button>
+          </div>
+        )}
         <TopBar
           activeView={activeView}
           onDataRefresh={handleDataRefresh}

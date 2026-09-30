@@ -3,7 +3,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Configurable for PostgreSQL or SQLite
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./sat_sa.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    if os.getenv("VERCEL"):
+        DATABASE_URL = "sqlite:////tmp/sat_sa.db"
+    else:
+        DATABASE_URL = "sqlite:///./sat_sa.db"
 
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 

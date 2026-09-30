@@ -1,8 +1,12 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .database import init_db
+from .database import init_db, SessionLocal, CSE
 from .api.routes import router
+from .data.generator import generate_synthetic_dataset
+from .analytics.pipeline import run_full_supervisory_analysis
+import time
+import logging
 
 app = FastAPI(
     title="NCIIPC SAT-SA: Supervisory Analytics Tool for SOC Assessment",
@@ -23,6 +27,18 @@ app.add_middleware(
 @app.on_event("startup")
 def on_startup():
     init_db()
+    if os.getenv("VERCEL"):
+        db = SessionLocal()
+        try:
+            if db.query(CSE).first() is None:
+                logging.warning("Cold start on Vercel: DB is empty. Generating synthetic dataset...")
+                start_time = time.time()
+                generate_synthetic_dataset(db)
+                run_full_supervisory_analysis(db)
+                duration = time.time() - start_time
+                logging.warning(f"Synthetic dataset generation and analysis took {duration:.2f} seconds.")
+        finally:
+            db.close()
 
 # Mount API routes
 app.include_router(router)

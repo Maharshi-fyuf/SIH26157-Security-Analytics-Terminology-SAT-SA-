@@ -3,6 +3,7 @@ import { demo } from './data/demoSnapshot';
 const API_BASE = import.meta.env.VITE_API_BASE || "/api";
 const MODE_KEY = "sat-sa-ui-mode";
 export const MODE_EVENT = "sat-sa-mode-change";
+export const API_ERROR_EVENT = "sat-sa-api-error";
 
 // --- Proof Mode -------------------------------------------------------
 // Proof Mode swaps every read/write call below for a pre-baked, internally
@@ -37,9 +38,14 @@ function settle(value, ms = 250) {
 
 export async function fetchDashboard() {
   if (isProofMode()) return settle(demo.getDashboard());
-  const res = await fetch(`${API_BASE}/dashboard`);
-  if (!res.ok) throw new Error("Failed to fetch dashboard data");
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/dashboard`);
+    if (!res.ok) throw new Error("Failed to fetch dashboard data");
+    return res.json();
+  } catch (err) {
+    if (!isProofMode()) window.dispatchEvent(new CustomEvent(API_ERROR_EVENT, { detail: err.message }));
+    throw err;
+  }
 }
 
 export async function fetchCSEs() {
