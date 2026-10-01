@@ -9,6 +9,10 @@ if not DATABASE_URL:
         DATABASE_URL = "sqlite:////tmp/sat_sa.db"
     else:
         DATABASE_URL = "sqlite:///./sat_sa.db"
+elif DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg://", 1)
+elif DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
 
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
